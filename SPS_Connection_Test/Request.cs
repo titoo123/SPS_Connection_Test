@@ -23,7 +23,7 @@ namespace SPS_Connection_Test
         int anzahl;     //Anzahl
         int status;     //Status
         //
-        //
+        
         
         public int Anzahl
         {
