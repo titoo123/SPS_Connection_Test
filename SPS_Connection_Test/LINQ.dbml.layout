@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.875" name="LINQ">
+  <DataContextMoniker Name="/LINQDataContext" />
+  <nestedChildShapes>
+    <classShape Id="7dd88630-1721-46f3-bc24-0c595e5bb20a" absoluteBounds="4.625, 5.125, 2, 1.0016910807291668">
+      <DataClassMoniker Name="/LINQDataContext/Ofen" />
+      <nestedChildShapes>
+        <elementListCompartment Id="03676cf9-d390-4729-a304-2bdabc1e23b3" absoluteBounds="4.64, 5.585, 1.9700000000000002, 0.44169108072916669" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="1120e9b2-83aa-4113-815f-e8fd66c93671" absoluteBounds="1.875, 1.75, 2, 2.9247054036458331">
+      <DataClassMoniker Name="/LINQDataContext/Material" />
+      <nestedChildShapes>
+        <elementListCompartment Id="6853bdd2-bfc7-41f6-986b-74d97843d823" absoluteBounds="1.8900000000000001, 2.21, 1.9700000000000002, 2.364705403645833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="c5efdea2-adaf-4958-bca6-61a7e6dbf10a" absoluteBounds="1.875, 5.125, 2, 3.5016097005208326">
+      <DataClassMoniker Name="/LINQDataContext/Auftrag" />
+      <nestedChildShapes>
+        <elementListCompartment Id="c86e8637-92d4-4c0c-9e95-3ecf89bf273b" absoluteBounds="1.8900000000000006, 5.585, 1.9700000000000002, 2.941609700520833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(2.875 : 5.125); (2.875 : 4.67470540364583)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/LINQDataContext/Auftrag/Auftrag_Material" />
+      <nodes>
+        <classShapeMoniker Id="c5efdea2-adaf-4958-bca6-61a7e6dbf10a" />
+        <classShapeMoniker Id="1120e9b2-83aa-4113-815f-e8fd66c93671" />
+      </nodes>
+    </associationConnector>
+    <classShape Id="7e0a8b7c-f2a9-447d-a1a7-47a200f5b84e" absoluteBounds="4.75, 1.75, 2, 2.5401025390625">
+      <DataClassMoniker Name="/LINQDataContext/Glühung" />
+      <nestedChildShapes>
+        <elementListCompartment Id="b8842638-a87d-4d3e-9202-45b1d2fd4dfd" absoluteBounds="4.765, 2.21, 1.9700000000000002, 1.9801025390625" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(4.75 : 3.02005126953125); (3.875 : 3.02005126953125)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/LINQDataContext/Glühung/Glühung_Material" />
+      <nodes>
+        <classShapeMoniker Id="7e0a8b7c-f2a9-447d-a1a7-47a200f5b84e" />
+        <classShapeMoniker Id="1120e9b2-83aa-4113-815f-e8fd66c93671" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(5.6875 : 5.125); (5.6875 : 4.2901025390625)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/LINQDataContext/Ofen/Ofen_Glühung" />
+      <nodes>
+        <classShapeMoniker Id="7dd88630-1721-46f3-bc24-0c595e5bb20a" />
+        <classShapeMoniker Id="7e0a8b7c-f2a9-447d-a1a7-47a200f5b84e" />
+      </nodes>
+    </associationConnector>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>
