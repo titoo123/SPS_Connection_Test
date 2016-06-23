@@ -22,7 +22,7 @@ namespace SPS_Connection_Test
         int iId;        //ItemId
         int anzahl;     //Anzahl
         int status;     //Status
-
+        //
         //
         
         public int Anzahl
