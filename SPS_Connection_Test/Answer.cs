@@ -14,26 +14,30 @@ namespace SPS_Connection_Test
         Request request;
         NetworkStream n;
 
-        public Answer(Request request, NetworkStream n)
+        public Answer(Request request)
         {
             this.request = request;
-            this.n = n;
+            this.n = request.N;
 
             //Sendet Glühungen
-            if (request.All.Contains("getAnnealing"))
+            if (request.Befehl.Contains(Request.STRING_GET_ANNEALING))
             {
+                //var glu = (from g in d.Glühung
+                //           where g.Id_Ofen == request.OId
+                //           select g).Take(request.Anzahl);
 
-                var glu = (from g in d.Glühung
-                           where g.Id_Ofen == request.OId
-                           select g).Take(request.Anzahl);
-
-                foreach (var i in glu)
-                {
-                    SendAnswer(n, request.Id + i.Id_Intern + " " + i.Name + " " + i.Tonnage + "kg");
-                }
+                //foreach (var i in glu)
+                //{
+                    SendAnswer(
+                              n,BitConverter.GetBytes(Convert.ToInt16(request.Id))
+                        .Concat(BitConverter.GetBytes(request.AId))
+                        .Concat(BitConverter.GetBytes(1))
+                        .Concat(Encoding.ASCII.GetBytes(FixStringLenght("001/2016 800C/10h 34567Kg")))
+                        .ToArray());
+                //}
             }
             //Glühung verschieben mit GlühungsId und OfenId
-            if (request.All.Contains("moveAnnealing"))
+            if (request.Befehl.Contains(Request.STRING_MOVE_ANNEALING))
             {
                 var glu = from g in d.Glühung
                           where g.Id == request.GId
@@ -52,160 +56,172 @@ namespace SPS_Connection_Test
                 }
             }
 
-            if (request.All.Contains("getOrdersInAnnealing"))
+            if (request.Befehl.Contains(Request.STRING_GET_ORDERS_IN_ANNEALING))
             {
-                var ord = (from o in d.Auftrag
-                           join m in d.Material on o.Id equals m.Id_Auftrag
-                           join g in d.Glühung on m.Id_Glühung equals g.Id
-                           where g.Id == request.GId
-                           select new { o.ODL }).Take(request.Anzahl);
+                //var ord = (from o in d.Auftrag
+                //           join m in d.Material on o.Id equals m.Id_Auftrag
+                //           join g in d.Glühung on m.Id_Glühung equals g.Id
+                //           where g.Id == request.GId
+                //           select new { o.ODL }).Take(request.Anzahl);
 
-                foreach (var a in ord)
-                {
-                    SendAnswer(n, request.Id + a.ODL + "Abmessung???" + "rd" + "Tonnage in der Glühung" + "kg" + "Stückzahl in der Glühung" + "/" + "Gesamtstückzahl" + "kg");
-                }
+                //foreach (var a in ord)
+                //{
+                //    // SendAnswer(n, request.Id + a.ODL + "Abmessung???" + "rd" + "Tonnage in der Glühung" + "kg" + "Stückzahl in der Glühung" + "/" + "Gesamtstückzahl" + "kg");
+                //}
+                SendAnswer(
+                          n, BitConverter.GetBytes(Convert.ToInt16(request.Id))
+                    .Concat(BitConverter.GetBytes(request.GId))
+                    .Concat(BitConverter.GetBytes(1))
+                    .Concat(Encoding.ASCII.GetBytes( FixStringLenght("001 456 22rd 5654Kg 2/10")))
+                    .ToArray());
 
             }
-            if (request.All.Contains("getOrderEqAnnealing"))
+            if (request.Befehl.Contains(Request.STRING_GET_ORDERS_EQ_ANNEALING))
             {
-                var ord = (from o in d.Auftrag
-                           join m in d.Material on o.Id equals m.Id_Auftrag
-                           join g in d.Glühung on m.Id_Glühung equals g.Id
-                           where g.Id == request.GId
-                           select new { o.ODL }).Take(request.Anzahl);
+                //var ord = (from o in d.Auftrag
+                //           join m in d.Material on o.Id equals m.Id_Auftrag
+                //           join g in d.Glühung on m.Id_Glühung equals g.Id
+                //           where g.Id == request.GId
+                //           select new { o.ODL }).Take(request.Anzahl);
 
-                foreach (var a in ord)
-                {
-                    SendAnswer(n, request.Id + a.ODL + "Abmessung???" + "rd" + "Tonnage in der Glühung" + "kg" + "Stückzahl in der Glühung" + "/" + "Gesamtstückzahl" + "kg");
-                }
+                //foreach (var a in ord)
+                //{
+                //    //  SendAnswer(n, request.Id + a.ODL + "Abmessung???" + "rd" + "Tonnage in der Glühung" + "kg" + "Stückzahl in der Glühung" + "/" + "Gesamtstückzahl" + "kg");
+                //}
+                SendAnswer(
+                        n, BitConverter.GetBytes(Convert.ToInt16(request.Id))
+                .Concat(BitConverter.GetBytes(request.GId))
+                .Concat(BitConverter.GetBytes(1))
+                .Concat(Encoding.ASCII.GetBytes(FixStringLenght("021  56 22rd 5654Kg 2/10")))
+                .ToArray());
             }
-            if (request.All.Contains("getItemsInAnnealing"))
+            if (request.Befehl.Contains(Request.STRING_GET_ITEMS_IN_ANNEALING))
             {
-                var mat = from m in d.Material
-                          where m.Id_Auftrag == request.AId && m.Id_Glühung == request.GId
-                          select m;
+                //var mat = from m in d.Material
+                //          where m.Id_Auftrag == request.AId && m.Id_Glühung == request.GId
+                //          select m;
 
-                foreach (var i in mat)
-                {
-                    SendAnswer(n, request.Id + Convert.ToString(i.Id) + i.Gewicht + "kg");
-                }
+                //foreach (var i in mat)
+                //{
+                //    // SendAnswer(n, request.Id + Convert.ToString(i.Id) + i.Gewicht + "kg");
+                //}
             }
-            if (request.All.Contains("getItemsOutAnnealing"))
+            if (request.Befehl.Contains(Request.STRING_GET_ITEMS_OUT_ANNEALING))
             {
-                var mat = from m in d.Material
-                          where m.Id_Glühung == request.GId
-                          select m;
+                //var mat = from m in d.Material
+                //          where m.Id_Glühung == request.GId
+                //          select m;
 
-                foreach (var i in mat)
-                {
-                    SendAnswer(n, request.Id + Convert.ToString(i.Id) + i.Gewicht + "kg");
-                }
+                //foreach (var i in mat)
+                //{
+                //    //  SendAnswer(n, request.Id + Convert.ToString(i.Id) + i.Gewicht + "kg");
+                //}
             }
-            if (request.All.Contains("moveItemToReserve"))
+            if (request.Befehl.Contains(Request.STRING_MOVE_ALL_ITEMS_TO_RESERVE))
             {
-                var mat = from g in d.Material
-                          where g.Id == request.IId
-                          select g;
+                //var mat = from g in d.Material
+                //          where g.Id == request.IId
+                //          select g;
 
-                Material l = mat.First();
-                l.Id_Glühung = 0;
+                //Material l = mat.First();
+                //l.Id_Glühung = 0;
 
-                try
-                {
-                    d.SubmitChanges();
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("Datenbankzugriff fehlgeschlagen!");
-                }
+                //try
+                //{
+                //    d.SubmitChanges();
+                //}
+                //catch (Exception)
+                //{
+                //    Console.WriteLine("Datenbankzugriff fehlgeschlagen!");
+                //}
             }
-            if (request.All.Contains("moveItemToAnnealing"))
+            if (request.Befehl.Contains(Request.STRING_MOVE_ITEM_TO_ANNEALING))
             {
-                var mat = from g in d.Material
-                          where g.Id == request.IId
-                          select g;
+                //var mat = from g in d.Material
+                //          where g.Id == request.IId
+                //          select g;
 
-                Material l = mat.First();
-                l.Id_Glühung = request.GId;
+                //Material l = mat.First();
+                //l.Id_Glühung = request.GId;
 
-                try
-                {
-                    d.SubmitChanges();
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("Datenbankzugriff fehlgeschlagen!");
-                }
+                //try
+                //{
+                //    d.SubmitChanges();
+                //}
+                //catch (Exception)
+                //{
+                //    Console.WriteLine("Datenbankzugriff fehlgeschlagen!");
+                //}
 
             }
-            if (request.All.Contains("moveAllItemsToReserve"))
+            if (request.Befehl.Contains(Request.STRING_MOVE_ALL_ITEMS_TO_RESERVE))
             {
-                var mat = from m in d.Material
-                          where m.Id_Auftrag == request.AId && m.Id_Glühung == request.GId
-                          select m;
+                //var mat = from m in d.Material
+                //          where m.Id_Auftrag == request.AId && m.Id_Glühung == request.GId
+                //          select m;
 
-                foreach (Material i in mat)
-                {
-                    i.Id_Glühung = 0;
-                }
+                //foreach (Material i in mat)
+                //{
+                //    i.Id_Glühung = 0;
+                //}
 
-                try
-                {
-                    d.SubmitChanges();
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("Datenbankzugriff fehlgeschlagen!");
-                }
+                //try
+                //{
+                //    d.SubmitChanges();
+                //}
+                //catch (Exception)
+                //{
+                //    Console.WriteLine("Datenbankzugriff fehlgeschlagen!");
+                //}
             }
-            if (request.All.Contains("moveAllItemsToAnnealing"))
+            if (request.Befehl.Contains("moveAllItemsToAnnealing"))
             {
-                var mat = from m in d.Material
-                          where m.Id_Auftrag == request.AId && m.Id_Glühung == request.GId
-                          select m;
+                //var mat = from m in d.Material
+                //          where m.Id_Auftrag == request.AId && m.Id_Glühung == request.GId
+                //          select m;
 
-                foreach (Material i in mat)
-                {
-                    i.Id_Glühung = request.GId;
-                }
+                //foreach (Material i in mat)
+                //{
+                //    i.Id_Glühung = request.GId;
+                //}
 
-                try
-                {
-                    d.SubmitChanges();
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("Datenbankzugriff fehlgeschlagen!");
-                }
+                //try
+                //{
+                //    d.SubmitChanges();
+                //}
+                //catch (Exception)
+                //{
+                //    Console.WriteLine("Datenbankzugriff fehlgeschlagen!");
+                //}
             }
-            if (request.All.Contains("setAnnealingStat"))
+            if (request.Befehl.Contains("setAnnealingStat"))
             {
-                var glu = from g in d.Glühung
-                          where g.Id == request.GId
-                          select g;
+                //var glu = from g in d.Glühung
+                //          where g.Id == request.GId
+                //          select g;
 
-                switch (request.Status)
-                {
-                    //Wird bearbeitet
-                    case 1:
-                        glu.First().Status = "Wird verarbeitet!";
-                        break;
-                    //Ist beendet
-                    case 2:
-                        glu.First().Status = "Ist beendet!";
-                        break;
-                    //Glühfreigabe aufgehoben
-                    case 3:
-                        glu.First().Status = "Freigabe aufgehoben!";
-                        break;
-                    default:
-                        Console.WriteLine("Fehler! Annealingsstatus nicht erkannt!");
-                        break;
-                }
+                //switch (request.Status)
+                //{
+                //    //Wird bearbeitet
+                //    case 1:
+                //        glu.First().Status = "Wird verarbeitet!";
+                //        break;
+                //    //Ist beendet
+                //    case 2:
+                //        glu.First().Status = "Ist beendet!";
+                //        break;
+                //    //Glühfreigabe aufgehoben
+                //    case 3:
+                //        glu.First().Status = "Freigabe aufgehoben!";
+                //        break;
+                //    default:
+                //        Console.WriteLine("Fehler! Annealingsstatus nicht erkannt!");
+                //        break;
+                //}
 
             }
         }
-        public void SendAnswer(NetworkStream n, string s)
+        public void SendAnswer(NetworkStream n, byte[] s)
         {
             Paket p = new Paket(s);
             p.Verpacke();
@@ -214,7 +230,7 @@ namespace SPS_Connection_Test
             {
                 n.Write(p.getData(), 0, p.getLenght());
 
-                Console.WriteLine("Nachricht verschickt: \t " + Encoding.ASCII.GetString(p.getData()));
+                Console.WriteLine("Nachricht verschickt: \t " + Encoding.ASCII.GetString(p.getData()) + "\n");
             }
             else
             {
@@ -222,6 +238,22 @@ namespace SPS_Connection_Test
             }
 
 
+        }
+        public string FixStringLenght(string s) {
+            if (s.Length > 30)
+            {
+                s = s.Substring(0, s.Length - 2);
+                return FixStringLenght(s);
+            }
+            else if (s.Length < 30)
+            {
+                s = s + " ";
+                return FixStringLenght(s);
+            }
+            else
+            {
+                return s;
+            }
         }
     }
 }

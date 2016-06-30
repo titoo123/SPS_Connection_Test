@@ -20,6 +20,8 @@ namespace SPS_Connection_Test
         static void Main(string[] args)
         {
             Start_t();
+            
+
 
             Console.ReadKey();
 
@@ -27,78 +29,79 @@ namespace SPS_Connection_Test
 
         static void Listen()
         {
+            //10.222.47.122
             TcpListener tcpListener = new TcpListener(IPAddress.Any, 5000);
 
+            tcpListener.Start();
+            
+
+            Console.WriteLine("Sleep...");
+            Thread.Sleep(2000);
+            Console.WriteLine("Start thread...");
+
+
+            Console.WriteLine("Warte auf Verbindung...\n");
+
+            TcpClient tcpClient = tcpListener.AcceptTcpClient();
+            Socket s = tcpClient.Client;
+
             try
             {
-                tcpListener.Start();
+                Console.WriteLine("Verbunden! mit: " + IPAddress.Parse(((IPEndPoint)s.RemoteEndPoint).Address.ToString()) + "\n ");
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Console.WriteLine("Verbindungsprobleme...IP nicht erreichbar!");
+                Console.WriteLine("IP konnte nicht ermittelt werden! Ungültiger Client!\n" + e);
             }
 
-
-            Paket p = new Paket(Encoding.ASCII.GetBytes(s_message));
-            p.Verpacke();
-
-            try
+            while (true)
             {
-
-                while (true)
+                try
                 {
-                    Console.WriteLine("Sleep...");
-                    Thread.Sleep(2000);
-                    Console.WriteLine("Start thread...");
-
-
-                    Console.WriteLine("Warte auf Verbindung...");
-
-                    TcpClient tcpClient = tcpListener.AcceptTcpClient();
-                    Console.WriteLine("Verbunden!");
-
                     NetworkStream nStream = tcpClient.GetStream();
-
-                    //Send(nStream, p);
-
+                    
                     Cycle(nStream, tcpClient);
 
 
                     tcpClient.Close();
                     Console.WriteLine("Verbindung getrennt!");
                 }
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("Sorry.  You cannot read from this NetworkStream....");
+                catch (Exception e)
+                {
+                    tcpClient.Close();
+
+                    Console.WriteLine("Übertragung fehlerhaft!\n"); //+ e.ToString());
+
+                    tcpListener.Stop();
+                    tcpListener = null;
+                    Listen();
+
+                }
 
             }
-            finally
-            {
-                tcpListener.Stop();
-          
-                Start_t();
 
-                
-            }
+
         }
 
-        static void Start_t() {
+        static void Start_t()
+        {
 
             Thread t = new Thread(Listen);
-     
-            t.Start();
+
+                t.Start();
+
         }
-        
-        static void Cycle(NetworkStream n, TcpClient t ) {
+
+        static void Cycle(NetworkStream n, TcpClient t)
+        {
 
             byte[] myReadBuffer = new byte[1024 * 8];
             string m = String.Empty;
 
             if (n.CanRead)
             {
-                Console.WriteLine("Lese...");
-                //StringBuilder myCompleteMessage = new StringBuilder();
+                Console.WriteLine("Lese...\n");
+
                 int numberOfBytesRead = 0;
 
                 while (t.Connected)
@@ -108,33 +111,16 @@ namespace SPS_Connection_Test
                     if (numberOfBytesRead > 0)
                     {
                         Paket e = new Paket(myReadBuffer);
-                        m = e.Entpacke();
 
-                        Console.WriteLine("Empfangen: " + m);
-
-                        Request request = new Request(m);
-                        Answer answer = new Answer(request,n);
-                        //request.GenerateAnswer();
-                        //request.SendAnswer(n);
+                        Request request = new Request(e.Daten, n);
                     }
                 }
-                
+
             }
             else
             {
-                Console.WriteLine("Netzwerkstream wurde abgebrochen! Es kann nicht mehr gelesen werden!"); 
+                Console.WriteLine("Netzwerkstream wurde abgebrochen! Es kann nicht mehr gelesen werden!");
             }
-           // return m;
         }
     }
 }
-
-//Paket e = new Paket(myReadBuffer);
-//e.Entpacke();
-
-//StringBuilder myCompleteMessage = null;
-//myCompleteMessage.AppendFormat("{0}", Encoding.ASCII.GetString(myReadBuffer, 0, numberOfBytesRead));
-//Console.WriteLine("Empfangene Nachricht : " +
-//                             myCompleteMessage);
-//  m = m + myCompleteMessage;
-//myCompleteMessage.Clear();

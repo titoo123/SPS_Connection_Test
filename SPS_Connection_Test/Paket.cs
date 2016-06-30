@@ -24,26 +24,37 @@ namespace SPS_Connection_Test
         Byte[] byteArray;
         Byte[] daten;
 
-        public Paket(Byte[] daten)
+        public byte[] Daten
         {
-            this.daten = daten; 
-        }
-        public Paket(string s)
-        {
-            this.daten = Encoding.ASCII.GetBytes(s);
+            get
+            {
+                return daten;
+            }
+
         }
 
-        public void Verpacke() {
-            
+        public Paket(Byte[] daten)
+        {
+            //this.daten = daten.Skip(4).ToArray(); 
+            this.daten = daten;
+        }
+        //public Paket(string s)
+        //{
+        //    this.daten = Encoding.ASCII.GetBytes(s);
+        //}
+
+        public void Verpacke()
+        {
+
             //Fügt Stratwert hinzu
             byteArray = startwert;
 
             //Übergibt Hashwert
-            tc.AddData(daten);
+            tc.AddData(Daten);
             byteArray = byteArray.Concat(BitConverter.GetBytes(tc.Crc32Value).Reverse()).ToArray();
 
             //Übergibt Nutzerdatenlänge
-            nutzdatenlänge = Convert.ToInt16(daten.Length);
+            nutzdatenlänge = Convert.ToInt16(Daten.Length);
             byte[] nL = BitConverter.GetBytes(nutzdatenlänge).Reverse().ToArray();
             byteArray = byteArray.Concat(nL).ToArray();
             //byteArray = byteArray.Concat(BitConverter.GetBytes(nutzdatenlänge)).ToArray();
@@ -55,29 +66,38 @@ namespace SPS_Connection_Test
             //byteArray = byteArray.Concat(BitConverter.GetBytes(gesamtlänge)).ToArray();
 
             //Übergibt Nutzerdaten
-            byteArray = byteArray.Concat(daten).ToArray();
+            byteArray = byteArray.Concat(Daten).ToArray();
 
             //Prepariert Daten für transport
             byteArray = Prepare(byteArray);
         }
-        public string Entpacke() {
-            
-            if (TrueMessage(daten.Take(4)))
-            {
-                if (TrueValue(daten.Skip(4).Take(4)))
-                {
-                    nutzdatenlänge = BitConverter.ToInt16( daten.Skip(8).Take(2).Reverse().ToArray(),0);
-                    gesamtlänge = BitConverter.ToInt16(daten.Skip(10).Take(2).Reverse().ToArray(), 0);
-                    byteArray = daten.Skip(12).Take(nutzdatenlänge).ToArray();
-                }
+        //public string Entpacke()
+        //{
 
-            }
-            return Encoding.ASCII.GetString(byteArray, 0, nutzdatenlänge) ;
-        }
+        //    if (Daten.Length > 0)
+        //    {
+        //        if (TrueMessage(Daten.Take(4)))
+        //        {
+        //            //if (TrueValue(Daten.Skip(4).Take(4)))
+        //            //{
+        //                nutzdatenlänge = BitConverter.ToInt16(Daten.Skip(8).Take(2).Reverse().ToArray(), 0);
+        //                gesamtlänge = BitConverter.ToInt16(Daten.Skip(10).Take(2).Reverse().ToArray(), 0);
+        //                byteArray = Daten.Skip(12).Take(nutzdatenlänge).ToArray();
+
+        //            return Encoding.ASCII.GetString(Daten, 0, Daten.Length);
+        //            //return Encoding.ASCII.GetString(byteArray, 0, nutzdatenlänge);
+        //            //}
+
+        //        }
+        //    }
+
+        //    return "";
+
+        //}
 
         private bool TrueValue(IEnumerable<byte> enumerable)
         {
-            tc.AddData(daten.Skip(2).Take(14).ToArray());
+            tc.AddData(Daten.Skip(2).Take(14).ToArray());
             //if (enumerable.SequenceEqual( BitConverter.GetBytes(tc.Crc32Value)))
             //{
             //    return true;
