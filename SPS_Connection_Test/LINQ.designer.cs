@@ -30,15 +30,15 @@ namespace SPS_Connection_Test
 		
     #region Definitionen der Erweiterungsmethoden
     partial void OnCreated();
-    partial void InsertAuftrag(Auftrag instance);
-    partial void UpdateAuftrag(Auftrag instance);
-    partial void DeleteAuftrag(Auftrag instance);
     partial void InsertGlühung(Glühung instance);
     partial void UpdateGlühung(Glühung instance);
     partial void DeleteGlühung(Glühung instance);
     partial void InsertOfen(Ofen instance);
     partial void UpdateOfen(Ofen instance);
     partial void DeleteOfen(Ofen instance);
+    partial void InsertAuftrag(Auftrag instance);
+    partial void UpdateAuftrag(Auftrag instance);
+    partial void DeleteAuftrag(Auftrag instance);
     partial void InsertMaterial(Material instance);
     partial void UpdateMaterial(Material instance);
     partial void DeleteMaterial(Material instance);
@@ -74,14 +74,6 @@ namespace SPS_Connection_Test
 			OnCreated();
 		}
 		
-		public System.Data.Linq.Table<Auftrag> Auftrag
-		{
-			get
-			{
-				return this.GetTable<Auftrag>();
-			}
-		}
-		
 		public System.Data.Linq.Table<Glühung> Glühung
 		{
 			get
@@ -98,12 +90,433 @@ namespace SPS_Connection_Test
 			}
 		}
 		
+		public System.Data.Linq.Table<Auftrag> Auftrag
+		{
+			get
+			{
+				return this.GetTable<Auftrag>();
+			}
+		}
+		
 		public System.Data.Linq.Table<Material> Material
 		{
 			get
 			{
 				return this.GetTable<Material>();
 			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Glühung")]
+	public partial class Glühung : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _Id;
+		
+		private System.Nullable<System.DateTime> _Erstellungsdatum;
+		
+		private System.Nullable<System.DateTime> _Start;
+		
+		private System.Nullable<System.DateTime> _Ende;
+		
+		private string _Name;
+		
+		private string _Status;
+		
+		private System.Nullable<int> _Gewicht;
+		
+		private System.Nullable<int> _Id_Ofen;
+		
+		private string _Id_Intern;
+		
+		private EntitySet<Material> _Material;
+		
+		private EntityRef<Ofen> _Ofen;
+		
+    #region Definitionen der Erweiterungsmethoden
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnIdChanging(int value);
+    partial void OnIdChanged();
+    partial void OnErstellungsdatumChanging(System.Nullable<System.DateTime> value);
+    partial void OnErstellungsdatumChanged();
+    partial void OnStartChanging(System.Nullable<System.DateTime> value);
+    partial void OnStartChanged();
+    partial void OnEndeChanging(System.Nullable<System.DateTime> value);
+    partial void OnEndeChanged();
+    partial void OnNameChanging(string value);
+    partial void OnNameChanged();
+    partial void OnStatusChanging(string value);
+    partial void OnStatusChanged();
+    partial void OnGewichtChanging(System.Nullable<int> value);
+    partial void OnGewichtChanged();
+    partial void OnId_OfenChanging(System.Nullable<int> value);
+    partial void OnId_OfenChanged();
+    partial void OnId_InternChanging(string value);
+    partial void OnId_InternChanged();
+    #endregion
+		
+		public Glühung()
+		{
+			this._Material = new EntitySet<Material>(new Action<Material>(this.attach_Material), new Action<Material>(this.detach_Material));
+			this._Ofen = default(EntityRef<Ofen>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this.OnIdChanging(value);
+					this.SendPropertyChanging();
+					this._Id = value;
+					this.SendPropertyChanged("Id");
+					this.OnIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Erstellungsdatum", DbType="DateTime")]
+		public System.Nullable<System.DateTime> Erstellungsdatum
+		{
+			get
+			{
+				return this._Erstellungsdatum;
+			}
+			set
+			{
+				if ((this._Erstellungsdatum != value))
+				{
+					this.OnErstellungsdatumChanging(value);
+					this.SendPropertyChanging();
+					this._Erstellungsdatum = value;
+					this.SendPropertyChanged("Erstellungsdatum");
+					this.OnErstellungsdatumChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Start", DbType="DateTime")]
+		public System.Nullable<System.DateTime> Start
+		{
+			get
+			{
+				return this._Start;
+			}
+			set
+			{
+				if ((this._Start != value))
+				{
+					this.OnStartChanging(value);
+					this.SendPropertyChanging();
+					this._Start = value;
+					this.SendPropertyChanged("Start");
+					this.OnStartChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Ende", DbType="DateTime")]
+		public System.Nullable<System.DateTime> Ende
+		{
+			get
+			{
+				return this._Ende;
+			}
+			set
+			{
+				if ((this._Ende != value))
+				{
+					this.OnEndeChanging(value);
+					this.SendPropertyChanging();
+					this._Ende = value;
+					this.SendPropertyChanged("Ende");
+					this.OnEndeChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Name", DbType="VarChar(30)")]
+		public string Name
+		{
+			get
+			{
+				return this._Name;
+			}
+			set
+			{
+				if ((this._Name != value))
+				{
+					this.OnNameChanging(value);
+					this.SendPropertyChanging();
+					this._Name = value;
+					this.SendPropertyChanged("Name");
+					this.OnNameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Status", DbType="VarChar(20)")]
+		public string Status
+		{
+			get
+			{
+				return this._Status;
+			}
+			set
+			{
+				if ((this._Status != value))
+				{
+					this.OnStatusChanging(value);
+					this.SendPropertyChanging();
+					this._Status = value;
+					this.SendPropertyChanged("Status");
+					this.OnStatusChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Gewicht", DbType="Int")]
+		public System.Nullable<int> Gewicht
+		{
+			get
+			{
+				return this._Gewicht;
+			}
+			set
+			{
+				if ((this._Gewicht != value))
+				{
+					this.OnGewichtChanging(value);
+					this.SendPropertyChanging();
+					this._Gewicht = value;
+					this.SendPropertyChanged("Gewicht");
+					this.OnGewichtChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id_Ofen", DbType="Int")]
+		public System.Nullable<int> Id_Ofen
+		{
+			get
+			{
+				return this._Id_Ofen;
+			}
+			set
+			{
+				if ((this._Id_Ofen != value))
+				{
+					if (this._Ofen.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnId_OfenChanging(value);
+					this.SendPropertyChanging();
+					this._Id_Ofen = value;
+					this.SendPropertyChanged("Id_Ofen");
+					this.OnId_OfenChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id_Intern", DbType="NChar(8)")]
+		public string Id_Intern
+		{
+			get
+			{
+				return this._Id_Intern;
+			}
+			set
+			{
+				if ((this._Id_Intern != value))
+				{
+					this.OnId_InternChanging(value);
+					this.SendPropertyChanging();
+					this._Id_Intern = value;
+					this.SendPropertyChanged("Id_Intern");
+					this.OnId_InternChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Glühung_Material", Storage="_Material", ThisKey="Id", OtherKey="Id_Glühung")]
+		public EntitySet<Material> Material
+		{
+			get
+			{
+				return this._Material;
+			}
+			set
+			{
+				this._Material.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Ofen_Glühung", Storage="_Ofen", ThisKey="Id_Ofen", OtherKey="Id", IsForeignKey=true)]
+		public Ofen Ofen
+		{
+			get
+			{
+				return this._Ofen.Entity;
+			}
+			set
+			{
+				Ofen previousValue = this._Ofen.Entity;
+				if (((previousValue != value) 
+							|| (this._Ofen.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Ofen.Entity = null;
+						previousValue.Glühung.Remove(this);
+					}
+					this._Ofen.Entity = value;
+					if ((value != null))
+					{
+						value.Glühung.Add(this);
+						this._Id_Ofen = value.Id;
+					}
+					else
+					{
+						this._Id_Ofen = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("Ofen");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_Material(Material entity)
+		{
+			this.SendPropertyChanging();
+			entity.Glühung = this;
+		}
+		
+		private void detach_Material(Material entity)
+		{
+			this.SendPropertyChanging();
+			entity.Glühung = null;
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Ofen")]
+	public partial class Ofen : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _Id;
+		
+		private EntitySet<Glühung> _Glühung;
+		
+    #region Definitionen der Erweiterungsmethoden
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnIdChanging(int value);
+    partial void OnIdChanged();
+    #endregion
+		
+		public Ofen()
+		{
+			this._Glühung = new EntitySet<Glühung>(new Action<Glühung>(this.attach_Glühung), new Action<Glühung>(this.detach_Glühung));
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this.OnIdChanging(value);
+					this.SendPropertyChanging();
+					this._Id = value;
+					this.SendPropertyChanged("Id");
+					this.OnIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Ofen_Glühung", Storage="_Glühung", ThisKey="Id", OtherKey="Id_Ofen")]
+		public EntitySet<Glühung> Glühung
+		{
+			get
+			{
+				return this._Glühung;
+			}
+			set
+			{
+				this._Glühung.Assign(value);
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_Glühung(Glühung entity)
+		{
+			this.SendPropertyChanging();
+			entity.Ofen = this;
+		}
+		
+		private void detach_Glühung(Glühung entity)
+		{
+			this.SendPropertyChanging();
+			entity.Ofen = null;
 		}
 	}
 	
@@ -941,419 +1354,6 @@ namespace SPS_Connection_Test
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Glühung")]
-	public partial class Glühung : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _Id;
-		
-		private System.Nullable<System.DateTime> _Erstellungsdatum;
-		
-		private System.Nullable<System.DateTime> _Start;
-		
-		private System.Nullable<System.DateTime> _Ende;
-		
-		private string _Name;
-		
-		private string _Status;
-		
-		private System.Nullable<int> _Gewicht;
-		
-		private System.Nullable<int> _Id_Ofen;
-		
-		private string _Id_Intern;
-		
-		private EntitySet<Material> _Material;
-		
-		private EntityRef<Ofen> _Ofen;
-		
-    #region Definitionen der Erweiterungsmethoden
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnIdChanging(int value);
-    partial void OnIdChanged();
-    partial void OnErstellungsdatumChanging(System.Nullable<System.DateTime> value);
-    partial void OnErstellungsdatumChanged();
-    partial void OnStartChanging(System.Nullable<System.DateTime> value);
-    partial void OnStartChanged();
-    partial void OnEndeChanging(System.Nullable<System.DateTime> value);
-    partial void OnEndeChanged();
-    partial void OnNameChanging(string value);
-    partial void OnNameChanged();
-    partial void OnStatusChanging(string value);
-    partial void OnStatusChanged();
-    partial void OnGewichtChanging(System.Nullable<int> value);
-    partial void OnGewichtChanged();
-    partial void OnId_OfenChanging(System.Nullable<int> value);
-    partial void OnId_OfenChanged();
-    partial void OnId_InternChanging(string value);
-    partial void OnId_InternChanged();
-    #endregion
-		
-		public Glühung()
-		{
-			this._Material = new EntitySet<Material>(new Action<Material>(this.attach_Material), new Action<Material>(this.detach_Material));
-			this._Ofen = default(EntityRef<Ofen>);
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int Id
-		{
-			get
-			{
-				return this._Id;
-			}
-			set
-			{
-				if ((this._Id != value))
-				{
-					this.OnIdChanging(value);
-					this.SendPropertyChanging();
-					this._Id = value;
-					this.SendPropertyChanged("Id");
-					this.OnIdChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Erstellungsdatum", DbType="DateTime")]
-		public System.Nullable<System.DateTime> Erstellungsdatum
-		{
-			get
-			{
-				return this._Erstellungsdatum;
-			}
-			set
-			{
-				if ((this._Erstellungsdatum != value))
-				{
-					this.OnErstellungsdatumChanging(value);
-					this.SendPropertyChanging();
-					this._Erstellungsdatum = value;
-					this.SendPropertyChanged("Erstellungsdatum");
-					this.OnErstellungsdatumChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Start", DbType="DateTime")]
-		public System.Nullable<System.DateTime> Start
-		{
-			get
-			{
-				return this._Start;
-			}
-			set
-			{
-				if ((this._Start != value))
-				{
-					this.OnStartChanging(value);
-					this.SendPropertyChanging();
-					this._Start = value;
-					this.SendPropertyChanged("Start");
-					this.OnStartChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Ende", DbType="DateTime")]
-		public System.Nullable<System.DateTime> Ende
-		{
-			get
-			{
-				return this._Ende;
-			}
-			set
-			{
-				if ((this._Ende != value))
-				{
-					this.OnEndeChanging(value);
-					this.SendPropertyChanging();
-					this._Ende = value;
-					this.SendPropertyChanged("Ende");
-					this.OnEndeChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Name", DbType="VarChar(30)")]
-		public string Name
-		{
-			get
-			{
-				return this._Name;
-			}
-			set
-			{
-				if ((this._Name != value))
-				{
-					this.OnNameChanging(value);
-					this.SendPropertyChanging();
-					this._Name = value;
-					this.SendPropertyChanged("Name");
-					this.OnNameChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Status", DbType="VarChar(20)")]
-		public string Status
-		{
-			get
-			{
-				return this._Status;
-			}
-			set
-			{
-				if ((this._Status != value))
-				{
-					this.OnStatusChanging(value);
-					this.SendPropertyChanging();
-					this._Status = value;
-					this.SendPropertyChanged("Status");
-					this.OnStatusChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Gewicht", DbType="Int")]
-		public System.Nullable<int> Gewicht
-		{
-			get
-			{
-				return this._Gewicht;
-			}
-			set
-			{
-				if ((this._Gewicht != value))
-				{
-					this.OnGewichtChanging(value);
-					this.SendPropertyChanging();
-					this._Gewicht = value;
-					this.SendPropertyChanged("Gewicht");
-					this.OnGewichtChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id_Ofen", DbType="Int")]
-		public System.Nullable<int> Id_Ofen
-		{
-			get
-			{
-				return this._Id_Ofen;
-			}
-			set
-			{
-				if ((this._Id_Ofen != value))
-				{
-					if (this._Ofen.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnId_OfenChanging(value);
-					this.SendPropertyChanging();
-					this._Id_Ofen = value;
-					this.SendPropertyChanged("Id_Ofen");
-					this.OnId_OfenChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id_Intern", DbType="NChar(8)")]
-		public string Id_Intern
-		{
-			get
-			{
-				return this._Id_Intern;
-			}
-			set
-			{
-				if ((this._Id_Intern != value))
-				{
-					this.OnId_InternChanging(value);
-					this.SendPropertyChanging();
-					this._Id_Intern = value;
-					this.SendPropertyChanged("Id_Intern");
-					this.OnId_InternChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Glühung_Material", Storage="_Material", ThisKey="Id", OtherKey="Id_Glühung")]
-		public EntitySet<Material> Material
-		{
-			get
-			{
-				return this._Material;
-			}
-			set
-			{
-				this._Material.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Ofen_Glühung", Storage="_Ofen", ThisKey="Id_Ofen", OtherKey="Id", IsForeignKey=true)]
-		public Ofen Ofen
-		{
-			get
-			{
-				return this._Ofen.Entity;
-			}
-			set
-			{
-				Ofen previousValue = this._Ofen.Entity;
-				if (((previousValue != value) 
-							|| (this._Ofen.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Ofen.Entity = null;
-						previousValue.Glühung.Remove(this);
-					}
-					this._Ofen.Entity = value;
-					if ((value != null))
-					{
-						value.Glühung.Add(this);
-						this._Id_Ofen = value.Id;
-					}
-					else
-					{
-						this._Id_Ofen = default(Nullable<int>);
-					}
-					this.SendPropertyChanged("Ofen");
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-		
-		private void attach_Material(Material entity)
-		{
-			this.SendPropertyChanging();
-			entity.Glühung = this;
-		}
-		
-		private void detach_Material(Material entity)
-		{
-			this.SendPropertyChanging();
-			entity.Glühung = null;
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Ofen")]
-	public partial class Ofen : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _Id;
-		
-		private EntitySet<Glühung> _Glühung;
-		
-    #region Definitionen der Erweiterungsmethoden
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnIdChanging(int value);
-    partial void OnIdChanged();
-    #endregion
-		
-		public Ofen()
-		{
-			this._Glühung = new EntitySet<Glühung>(new Action<Glühung>(this.attach_Glühung), new Action<Glühung>(this.detach_Glühung));
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int Id
-		{
-			get
-			{
-				return this._Id;
-			}
-			set
-			{
-				if ((this._Id != value))
-				{
-					this.OnIdChanging(value);
-					this.SendPropertyChanging();
-					this._Id = value;
-					this.SendPropertyChanged("Id");
-					this.OnIdChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Ofen_Glühung", Storage="_Glühung", ThisKey="Id", OtherKey="Id_Ofen")]
-		public EntitySet<Glühung> Glühung
-		{
-			get
-			{
-				return this._Glühung;
-			}
-			set
-			{
-				this._Glühung.Assign(value);
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-		
-		private void attach_Glühung(Glühung entity)
-		{
-			this.SendPropertyChanging();
-			entity.Ofen = this;
-		}
-		
-		private void detach_Glühung(Glühung entity)
-		{
-			this.SendPropertyChanging();
-			entity.Ofen = null;
-		}
-	}
-	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Material")]
 	public partial class Material : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -1369,6 +1369,8 @@ namespace SPS_Connection_Test
 		private string _Stahlsorte;
 		
 		private string _Charge;
+		
+		private string _Status;
 		
 		private System.Nullable<int> _Anzahl;
 		
@@ -1396,6 +1398,8 @@ namespace SPS_Connection_Test
     partial void OnStahlsorteChanged();
     partial void OnChargeChanging(string value);
     partial void OnChargeChanged();
+    partial void OnStatusChanging(string value);
+    partial void OnStatusChanged();
     partial void OnAnzahlChanging(System.Nullable<int> value);
     partial void OnAnzahlChanged();
     partial void OnGewichtChanging(System.Nullable<int> value);
@@ -1509,6 +1513,26 @@ namespace SPS_Connection_Test
 					this._Charge = value;
 					this.SendPropertyChanged("Charge");
 					this.OnChargeChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Status", DbType="VarChar(20)")]
+		public string Status
+		{
+			get
+			{
+				return this._Status;
+			}
+			set
+			{
+				if ((this._Status != value))
+				{
+					this.OnStatusChanging(value);
+					this.SendPropertyChanging();
+					this._Status = value;
+					this.SendPropertyChanged("Status");
+					this.OnStatusChanged();
 				}
 			}
 		}

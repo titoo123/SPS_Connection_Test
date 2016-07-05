@@ -23,6 +23,8 @@ namespace SPS_Connection_Test
 
         Byte[] byteArray;
         Byte[] daten;
+        //Konstante zum auffüllen der Bytearrays 
+        const int c = 100;
 
         public byte[] Daten
         {
@@ -128,7 +130,7 @@ namespace SPS_Connection_Test
         public Int16 getGesamtlänge(Int32 n)
         {
             Int32 l = n;
-            while (l % 20 != 0)
+            while (l % c != 0)
             {
                 l++;
             }
@@ -139,15 +141,15 @@ namespace SPS_Connection_Test
 
         public Byte[] Prepare(Byte[] m)
         {
-            Byte[] endByteArray = new Byte[20];
+            Byte[] endByteArray = new Byte[c];
 
             //Füllt EndArray
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < c; i++)
             {
                 endByteArray[i] = 255;
             }
 
-            while (m.Length % 20 != 0)
+            while (m.Length % c != 0)
             {
                 m = m.Concat(new Byte[] { 255 }).ToArray();
             }
@@ -157,7 +159,6 @@ namespace SPS_Connection_Test
 
         public Byte[] getData()
         {
-
             return this.byteArray;
         }
         public String getDataString()

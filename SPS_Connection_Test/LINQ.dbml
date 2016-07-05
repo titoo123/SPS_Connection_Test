@@ -1,5 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><Database Name="ioDB" Class="LINQDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
   <Connection Mode="AppSettings" ConnectionString="Data Source=HES-ESW-PLS\OFEN_DB;Initial Catalog=ioDB;Integrated Security=True" SettingsObjectName="SPS_Connection_Test.Properties.Settings" SettingsPropertyName="ioDBConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.Glühung" Member="Glühung">
+    <Type Name="Glühung">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Erstellungsdatum" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="Start" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="Ende" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="Name" Type="System.String" DbType="VarChar(30)" CanBeNull="true" />
+      <Column Name="Status" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
+      <Column Name="Gewicht" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Id_Ofen" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Id_Intern" Type="System.String" DbType="NChar(8)" CanBeNull="true" />
+      <Association Name="Glühung_Material" Member="Material" ThisKey="Id" OtherKey="Id_Glühung" Type="Material" />
+      <Association Name="Ofen_Glühung" Member="Ofen" ThisKey="Id_Ofen" OtherKey="Id" Type="Ofen" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Ofen" Member="Ofen">
+    <Type Name="Ofen">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Association Name="Ofen_Glühung" Member="Glühung" ThisKey="Id" OtherKey="Id_Ofen" Type="Glühung" />
+    </Type>
+  </Table>
   <Table Name="dbo.Auftrag" Member="Auftrag">
     <Type Name="Auftrag">
       <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -37,27 +58,6 @@
       <Association Name="Auftrag_Material" Member="Material" ThisKey="Id" OtherKey="Id_Auftrag" Type="Material" />
     </Type>
   </Table>
-  <Table Name="dbo.Glühung" Member="Glühung">
-    <Type Name="Glühung">
-      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="Erstellungsdatum" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="Start" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="Ende" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="Name" Type="System.String" DbType="VarChar(30)" CanBeNull="true" />
-      <Column Name="Status" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
-      <Column Name="Gewicht" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Id_Ofen" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Id_Intern" Type="System.String" DbType="NChar(8)" CanBeNull="true" />
-      <Association Name="Glühung_Material" Member="Material" ThisKey="Id" OtherKey="Id_Glühung" Type="Material" />
-      <Association Name="Ofen_Glühung" Member="Ofen" ThisKey="Id_Ofen" OtherKey="Id" Type="Ofen" IsForeignKey="true" />
-    </Type>
-  </Table>
-  <Table Name="dbo.Ofen" Member="Ofen">
-    <Type Name="Ofen">
-      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Association Name="Ofen_Glühung" Member="Glühung" ThisKey="Id" OtherKey="Id_Ofen" Type="Glühung" />
-    </Type>
-  </Table>
   <Table Name="dbo.Material" Member="Material">
     <Type Name="Material">
       <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -65,6 +65,7 @@
       <Column Name="Bunde" Type="System.String" DbType="NChar(7)" CanBeNull="true" />
       <Column Name="Stahlsorte" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
       <Column Name="Charge" Type="System.String" DbType="VarChar(10)" CanBeNull="true" />
+      <Column Name="Status" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
       <Column Name="Anzahl" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="Gewicht" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="Id_Glühung" Type="System.Int32" DbType="Int" CanBeNull="true" />

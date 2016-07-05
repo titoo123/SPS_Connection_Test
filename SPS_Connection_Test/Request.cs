@@ -16,6 +16,7 @@ namespace SPS_Connection_Test
         int id;      //ID der Anfrage
 
         //Werte zum Datenempfang
+        //Für die Auftragsverwaltung
         Byte[] allBytes; //Ganzer Befehl
         int gId;         //GlühungsId
         int oId;         //OfenId
@@ -24,7 +25,10 @@ namespace SPS_Connection_Test
         int anzahl;      //Anzahl
         int status;      //Status
         string befehl;   //String für den Befehl                                    
-
+        //Für die Prozessverwaltung
+        int ebene;       //Ebene des Belegungsplans
+        int position;    //Position des Feldes auf dem Belegungsplan
+        int stückId;     //Id des Items
 
         public int Anzahl
         {
@@ -129,7 +133,45 @@ namespace SPS_Connection_Test
                 befehl = value;
             }
         }
+        public int Ebene
+        {
+            get
+            {
+                return ebene;
+            }
 
+            set
+            {
+                ebene = value;
+            }
+        }
+        public int Position
+        {
+            get
+            {
+                return position;
+            }
+
+            set
+            {
+                position = value;
+            }
+        }
+
+        public int StückId
+        {
+            get
+            {
+                return stückId;
+            }
+
+            set
+            {
+                stückId = value;
+            }
+        }
+
+        //Auftragsverwaltung
         public static string STRING_GET_ANNEALING = "getAnnealing";
         public static string STRING_MOVE_ANNEALING = "moveAnnealing";
 
@@ -147,9 +189,23 @@ namespace SPS_Connection_Test
 
         public static string STRING_SET_ANNEALING_STAT = "setAnnealingStat";
 
-        static string FEHLER_E_HEAD = "E_HEAD";
-        static string FEHLER_TOLONG = "TOLONG";
-        static string FEHLER_NALIGN = "NALIGN";
+        //Allgemeine Befehle
+        static string STRING_FEHLER_E_HEAD = "E_HEAD";
+        static string STRING_FEHLER_TOLONG = "TOLONG";
+        static string STRING_FEHLER_NALIGN = "NALIGN";
+
+        static string STRING_CRC_OK = "CRC_OK";
+        static string STRING_CRC_NOK = "CRCNOK";
+
+        //Prozessverwaltung
+        public static string STRING_GET_ASSIGNMENT = "getAssignment";
+        public static string STRING_SET_ASSIGNMENT = "setAssignment";
+
+        public static string STRING_SAVE_LOG_15S = "saveLog15s";
+        public static string STRING_SAVE_LOG_30S = "saveLog30s";
+        public static string STRING_SAVE_LOG_60S = "saveLog60s";
+
+        public static string STRING_GET_PROGRAM = "getProgram";
 
         //Übernimmt gesamte Anfrage und teilt diese
         public Request(Byte[] allBytes, NetworkStream n)
@@ -166,21 +222,29 @@ namespace SPS_Connection_Test
 
 
 
-            if (a.Contains(FEHLER_E_HEAD))
+            if (a.Contains(STRING_FEHLER_E_HEAD))
             {
-                Console.WriteLine("Fehler bei Nachricht!: " + FEHLER_E_HEAD +"\n");
+                Console.WriteLine("Fehler bei Nachricht!: " + STRING_FEHLER_E_HEAD +"\n");
             }
-            else if (a.Contains(FEHLER_E_HEAD))
+            else if (a.Contains(STRING_FEHLER_E_HEAD))
             {
-                Console.WriteLine("Fehler bei Nachricht!: " + FEHLER_E_HEAD + "\n");
+                Console.WriteLine("Fehler bei Nachricht!: " + STRING_FEHLER_E_HEAD + "\n");
             }
-            else if (a.Contains(FEHLER_TOLONG))
+            else if (a.Contains(STRING_FEHLER_TOLONG))
             {
-                Console.WriteLine("Fehler bei Nachricht!: " + FEHLER_TOLONG + "\n");
+                Console.WriteLine("Fehler bei Nachricht!: " + STRING_FEHLER_TOLONG + "\n");
             }
-            else if (a.Contains(FEHLER_NALIGN))
+            else if (a.Contains(STRING_FEHLER_NALIGN))
             {
-                Console.WriteLine("Fehler bei Nachricht!: " + FEHLER_NALIGN + "\n");
+                Console.WriteLine("Fehler bei Nachricht!: " + STRING_FEHLER_NALIGN + "\n");
+            }
+            else if (a.Contains(STRING_CRC_OK))
+            {
+                Console.WriteLine("Erfolgreich versendete Nachricht!: " + STRING_CRC_OK + "\n");
+            }
+            else if (a.Contains(STRING_CRC_NOK))
+            {
+                Console.WriteLine("Fehler bei Nachricht!: " + STRING_CRC_NOK + "\n");
             }
             else
             {
@@ -188,177 +252,267 @@ namespace SPS_Connection_Test
                 {
                     byte[] tmp = allBytes.Skip(34).ToArray();
 
-                    if (a.Contains(STRING_GET_ANNEALING))
+                    Request_Auftrag(a, tmp);
+                    Request_Prozess(a, tmp);
+                }
+            }
+
+
+            if (Befehl != String.Empty)
+            {
+                Console.WriteLine("Befehl: " +  Befehl + "\n" + " ID: " + Id + " OID: " + OId + " Anzahl: " + Anzahl  +
+                    " GID: " + GId + " AID: "+ AId + " IID: " + IId + " Status: " + Status + "\n " +
+                    "Ebene: " + Ebene + " Position: " + Position + " StückId: " + StückId + "\n ");
+
+                Answer aw = new Answer(this);
+            }
+        }
+
+        private void Request_Prozess(string a, byte[] tmp)
+        {
+            if (a.Contains(STRING_GET_ASSIGNMENT))
+            {
+                try
+                {
+                    Befehl = STRING_GET_ASSIGNMENT;
+                    GId = Convert.ToInt32(tmp.Take(4).Reverse().ToArray());
+                    Ebene = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(4).Take(2).Reverse().ToArray(), 0));
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Befehl: " + STRING_GET_ASSIGNMENT + " konnte nicht ausgeführt werden!");
+                }
+            }
+            if (a.Contains(STRING_SET_ASSIGNMENT))
+            {
+                try
+                {
+                    Befehl = STRING_SET_ASSIGNMENT;
+                    StückId = Convert.ToInt32(tmp.Take(4).Reverse().ToArray());
+                    Position = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(4).Take(2).Reverse().ToArray(), 0));
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Befehl: " + STRING_SET_ASSIGNMENT + " konnte nicht ausgeführt werden!");
+                }
+            }
+            if (a.Contains(STRING_SAVE_LOG_15S))
+            {
+                try
+                {
+                    Befehl = STRING_SAVE_LOG_15S;
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Befehl: " + STRING_SAVE_LOG_15S + " konnte nicht ausgeführt werden!");
+                }
+            }
+            if (a.Contains(STRING_SAVE_LOG_30S))
+            {
+                try
+                {
+                    Befehl = STRING_SAVE_LOG_30S;
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Befehl: " + STRING_SAVE_LOG_30S + " konnte nicht ausgeführt werden!");
+                }
+            }
+                if (a.Contains(STRING_SAVE_LOG_60S))
+                {
+                    try
                     {
-                        try
-                        {
-                            Befehl = STRING_GET_ANNEALING;
-                            OId = Convert.ToInt32(BitConverter.ToInt16(tmp.Take(2).Reverse().ToArray(), 0));
-                            Anzahl = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(2).Take(2).Reverse().ToArray(), 0));
-                        }
-                        catch (Exception)
-                        {
-                            Console.WriteLine("Befehl: " + STRING_GET_ANNEALING + "konnte nicht ausgeführt werden!");
-                        }
-
-
+                        Befehl = STRING_SAVE_LOG_60S;
                     }
-
-
-                    else if (a.Contains(STRING_MOVE_ANNEALING))
+                    catch (Exception)
                     {
-                        try
-                        {
-                            Befehl = STRING_MOVE_ANNEALING;
-                            GId = BitConverter.ToInt32(tmp.Take(4).Reverse().ToArray(), 0);
-                            OId = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(4).Take(2).Reverse().ToArray(), 0));
-                        }
-                        catch (Exception)
-                        {
-                            Console.WriteLine("Befehl: " + STRING_MOVE_ANNEALING + "konnte nicht ausgeführt werden!");
-                        }
+                        Console.WriteLine("Befehl: " + STRING_SAVE_LOG_60S + " konnte nicht ausgeführt werden!");
                     }
-                    else if (a.Contains(STRING_GET_ORDERS_IN_ANNEALING))
-                    {
-                        try
-                        {
-                            Befehl = STRING_GET_ORDERS_IN_ANNEALING;
-                            GId = BitConverter.ToInt32(tmp.Take(4).Reverse().ToArray(), 0);
-                            Anzahl = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(4).Take(2).Reverse().ToArray(), 0));
-                        }
-                        catch (Exception)
-                        {
-                            Console.WriteLine("Befehl: " + STRING_GET_ORDERS_IN_ANNEALING + "konnte nicht ausgeführt werden!");
-                        }
-                    }
-                    else if (a.Contains(STRING_GET_ORDERS_EQ_ANNEALING))
-                    {
-                        try
-                        {
-                            Befehl = STRING_GET_ORDERS_EQ_ANNEALING;
-                            GId = BitConverter.ToInt32(tmp.Take(4).Reverse().ToArray(), 0);
-                            Anzahl = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(4).Take(2).Reverse().ToArray(), 0));
-                        }
-                        catch (Exception)
-                        {
-                            Console.WriteLine("Befehl: " + STRING_GET_ORDERS_EQ_ANNEALING + "konnte nicht ausgeführt werden!");
-                        }
-                    }
-                    else if (a.Contains(STRING_GET_ITEMS_IN_ANNEALING))
-                    {
-                        try
-                        {
-                            Befehl = STRING_GET_ITEMS_IN_ANNEALING;
-
-                            GId = BitConverter.ToInt32(tmp.Take(4).Reverse().ToArray(), 0);
-                            AId = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(4).Take(4).Reverse().ToArray(), 0));
-                            Anzahl = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(8).Take(2).Reverse().ToArray(), 0));
-                        }
-                        catch (Exception)
-                        {
-                            Console.WriteLine("Befehl: " + STRING_GET_ITEMS_IN_ANNEALING + "konnte nicht ausgeführt werden!");
-                        }
-                    }
-                    else if (a.Contains(STRING_GET_ITEMS_OUT_ANNEALING))
-                    {
-                        try
-                        {
-                            Befehl = STRING_GET_ITEMS_OUT_ANNEALING;
-
-                            GId = BitConverter.ToInt32(tmp.Take(4).Reverse().ToArray(), 0);
-                            AId = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(4).Take(4).Reverse().ToArray(), 0));
-                            Anzahl = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(8).Take(2).Reverse().ToArray(), 0));
-                        }
-                        catch (Exception)
-                        {
-                            Console.WriteLine("Befehl: " + STRING_GET_ITEMS_OUT_ANNEALING + "konnte nicht ausgeführt werden!");
-                        }
-
-                    }
-                    else if (a.Contains(STRING_MOVE_ITEM_TO_RESERVE))
-                    {
-                        try
-                        {
-                            Befehl = STRING_MOVE_ITEM_TO_RESERVE;
-
-                            IId = BitConverter.ToInt32(tmp.Take(4).Reverse().ToArray(), 0);
-                        }
-                        catch (Exception)
-                        {
-                            Console.WriteLine("Befehl: " + STRING_MOVE_ITEM_TO_RESERVE + "konnte nicht ausgeführt werden!");
-                        }
-
-                    }
-                    else if (a.Contains(STRING_MOVE_ITEM_TO_ANNEALING))
-                    {
-                        try
-                        {
-                            Befehl = STRING_MOVE_ITEM_TO_ANNEALING;
-
-                            IId = BitConverter.ToInt32(tmp.Take(4).Reverse().ToArray(), 0);
-                            GId = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(4).Take(4).Reverse().ToArray(), 0));
-                        }
-                        catch (Exception)
-                        {
-                            Console.WriteLine("Befehl: " + STRING_MOVE_ITEM_TO_ANNEALING + "konnte nicht ausgeführt werden!");
-                        }
-
-                    }
-                    else if (a.Contains(STRING_MOVE_ALL_ITEMS_TO_RESERVE))
-                    {
-                        try
-                        {
-                            Befehl = STRING_MOVE_ALL_ITEMS_TO_RESERVE;
-
-                            GId = BitConverter.ToInt32(tmp.Take(4).Reverse().ToArray(), 0);
-                            AId = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(4).Take(4).Reverse().ToArray(), 0));
-                        }
-                        catch (Exception)
-                        {
-                            Console.WriteLine("Befehl: " + STRING_MOVE_ALL_ITEMS_TO_RESERVE + "konnte nicht ausgeführt werden!");
-                        }
-
-                    }
-                    else if (a.Contains(STRING_MOVE_ALL_ITEMS_TO_ANNEALING))
-                    {
-                        try
-                        {
-                            Befehl = STRING_MOVE_ALL_ITEMS_TO_ANNEALING;
-
-                            GId = BitConverter.ToInt32(tmp.Take(4).Reverse().ToArray(), 0);
-                            AId = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(4).Take(4).Reverse().ToArray(), 0));
-                        }
-                        catch (Exception)
-                        {
-                            Console.WriteLine("Befehl: " + STRING_MOVE_ALL_ITEMS_TO_ANNEALING + "konnte nicht ausgeführt werden!");
-                        }
-
-                    }
-                    else if (a.Contains(STRING_SET_ANNEALING_STAT))
-                    {
-                        try
-                        {
-                            Befehl = STRING_SET_ANNEALING_STAT;
-
-                            GId = BitConverter.ToInt32(tmp.Take(4).Reverse().ToArray(), 0);
-                            Status = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(4).Take(2).Reverse().ToArray(), 0));
-                        }
-                        catch (Exception)
-                        {
-                            Console.WriteLine("Befehl: " + STRING_SET_ANNEALING_STAT + "konnte nicht ausgeführt werden!");
-                        }
-
-                    }
-
-                    if (Befehl != String.Empty)
-                    {
-                        Console.WriteLine("Befehl: " + "\n" + Befehl + " ID: " + Id + " OID: " + OId + " Anzahl: " + Anzahl + " GID: " + GId + " AID: " + AId + " IID:" + IId + " Status: " + Status + "\n ");
-                        Answer aw = new Answer(this);
-                    }
+                }
+            if (a.Contains(STRING_GET_PROGRAM))
+            {
+                try
+                {
+                    Befehl = STRING_GET_PROGRAM;
+                    GId = Convert.ToInt32(BitConverter.ToInt16(tmp.Take(4).Reverse().ToArray(), 0));
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Befehl: " + STRING_GET_PROGRAM + " konnte nicht ausgeführt werden!");
                 }
             }
         }
 
+        private void Request_Auftrag(string a, byte[] tmp)
+        {
+            //if (allBytes.Length > 34)
+            //{
+                //byte[] tmp = allBytes.Skip(34).ToArray();
+
+                if (a.Contains(STRING_GET_ANNEALING))
+                {
+                    try
+                    {
+                        Befehl = STRING_GET_ANNEALING;
+                        OId = Convert.ToInt32(BitConverter.ToInt16(tmp.Take(2).Reverse().ToArray(), 0));
+                        Anzahl = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(2).Take(2).Reverse().ToArray(), 0));
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Befehl: " + STRING_GET_ANNEALING + "konnte nicht ausgeführt werden!");
+                    }
+
+
+                }
+
+
+                else if (a.Contains(STRING_MOVE_ANNEALING))
+                {
+                    try
+                    {
+                        Befehl = STRING_MOVE_ANNEALING;
+                        GId = BitConverter.ToInt32(tmp.Take(4).Reverse().ToArray(), 0);
+                        OId = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(4).Take(2).Reverse().ToArray(), 0));
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Befehl: " + STRING_MOVE_ANNEALING + "konnte nicht ausgeführt werden!");
+                    }
+                }
+                else if (a.Contains(STRING_GET_ORDERS_IN_ANNEALING))
+                {
+                    try
+                    {
+                        Befehl = STRING_GET_ORDERS_IN_ANNEALING;
+                        GId = BitConverter.ToInt32(tmp.Take(4).Reverse().ToArray(), 0);
+                        Anzahl = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(4).Take(2).Reverse().ToArray(), 0));
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Befehl: " + STRING_GET_ORDERS_IN_ANNEALING + "konnte nicht ausgeführt werden!");
+                    }
+                }
+                else if (a.Contains(STRING_GET_ORDERS_EQ_ANNEALING))
+                {
+                    try
+                    {
+                        Befehl = STRING_GET_ORDERS_EQ_ANNEALING;
+                        GId = BitConverter.ToInt32(tmp.Take(4).Reverse().ToArray(), 0);
+                        Anzahl = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(4).Take(2).Reverse().ToArray(), 0));
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Befehl: " + STRING_GET_ORDERS_EQ_ANNEALING + "konnte nicht ausgeführt werden!");
+                    }
+                }
+                else if (a.Contains(STRING_GET_ITEMS_IN_ANNEALING))
+                {
+                    try
+                    {
+                        Befehl = STRING_GET_ITEMS_IN_ANNEALING;
+
+                        GId = BitConverter.ToInt32(tmp.Take(4).Reverse().ToArray(), 0);
+                        AId = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(4).Take(4).Reverse().ToArray(), 0));
+                        Anzahl = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(8).Take(2).Reverse().ToArray(), 0));
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Befehl: " + STRING_GET_ITEMS_IN_ANNEALING + "konnte nicht ausgeführt werden!");
+                    }
+                }
+                else if (a.Contains(STRING_GET_ITEMS_OUT_ANNEALING))
+                {
+                    try
+                    {
+                        Befehl = STRING_GET_ITEMS_OUT_ANNEALING;
+
+                        GId = BitConverter.ToInt32(tmp.Take(4).Reverse().ToArray(), 0);
+                        AId = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(4).Take(4).Reverse().ToArray(), 0));
+                        Anzahl = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(8).Take(2).Reverse().ToArray(), 0));
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Befehl: " + STRING_GET_ITEMS_OUT_ANNEALING + "konnte nicht ausgeführt werden!");
+                    }
+
+                }
+                else if (a.Contains(STRING_MOVE_ITEM_TO_RESERVE))
+                {
+                    try
+                    {
+                        Befehl = STRING_MOVE_ITEM_TO_RESERVE;
+
+                        IId = BitConverter.ToInt32(tmp.Take(4).Reverse().ToArray(), 0);
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Befehl: " + STRING_MOVE_ITEM_TO_RESERVE + "konnte nicht ausgeführt werden!");
+                    }
+
+                }
+                else if (a.Contains(STRING_MOVE_ITEM_TO_ANNEALING))
+                {
+                    try
+                    {
+                        Befehl = STRING_MOVE_ITEM_TO_ANNEALING;
+
+                        IId = BitConverter.ToInt32(tmp.Take(4).Reverse().ToArray(), 0);
+                        GId = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(4).Take(4).Reverse().ToArray(), 0));
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Befehl: " + STRING_MOVE_ITEM_TO_ANNEALING + "konnte nicht ausgeführt werden!");
+                    }
+
+                }
+                else if (a.Contains(STRING_MOVE_ALL_ITEMS_TO_RESERVE))
+                {
+                    try
+                    {
+                        Befehl = STRING_MOVE_ALL_ITEMS_TO_RESERVE;
+
+                        GId = BitConverter.ToInt32(tmp.Take(4).Reverse().ToArray(), 0);
+                        AId = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(4).Take(4).Reverse().ToArray(), 0));
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Befehl: " + STRING_MOVE_ALL_ITEMS_TO_RESERVE + "konnte nicht ausgeführt werden!");
+                    }
+
+                }
+                else if (a.Contains(STRING_MOVE_ALL_ITEMS_TO_ANNEALING))
+                {
+                    try
+                    {
+                        Befehl = STRING_MOVE_ALL_ITEMS_TO_ANNEALING;
+
+                        GId = BitConverter.ToInt32(tmp.Take(4).Reverse().ToArray(), 0);
+                        AId = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(4).Take(4).Reverse().ToArray(), 0));
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Befehl: " + STRING_MOVE_ALL_ITEMS_TO_ANNEALING + "konnte nicht ausgeführt werden!");
+                    }
+
+                }
+                else if (a.Contains(STRING_SET_ANNEALING_STAT))
+                {
+                    try
+                    {
+                        Befehl = STRING_SET_ANNEALING_STAT;
+
+                        GId = BitConverter.ToInt32(tmp.Take(4).Reverse().ToArray(), 0);
+                        Status = Convert.ToInt32(BitConverter.ToInt16(tmp.Skip(4).Take(2).Reverse().ToArray(), 0));
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Befehl: " + STRING_SET_ANNEALING_STAT + "konnte nicht ausgeführt werden!");
+                    }
+
+                }
+
+            //}
+        }
     }
 
 }
